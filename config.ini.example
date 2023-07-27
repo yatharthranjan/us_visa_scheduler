@@ -17,6 +17,8 @@ LOCAL_USE = True
 ; Optional: HUB_ADDRESS is mandatory only when LOCAL_USE = False
 HUB_ADDRESS = http://localhost:9515/wd/hub
 
+DRIVER_PATH= "~/Downloads/chromedriver_mac_arm64/chromedriver"
+
 [NOTIFICATION]
 ; Get push notifications via https://pushover.net/ (optional)
 PUSHOVER_TOKEN = 
@@ -38,3 +40,6 @@ WORK_LIMIT_TIME = 1.5
 WORK_COOLDOWN_TIME = 2.25
 ; Temporary Banned (empty list): wait COOLDOWN_TIME (hours)
 BAN_COOLDOWN_TIME = 5
+
+NO_DATE_SLEEP_TIME = 60
+NO_DATE_THRESHOLD= 5

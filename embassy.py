@@ -10,4 +10,5 @@ Embassies = {
     "en-ca-que": ["en-ca", 93, "Continue"], # English - Canada - Quebec City
     "en-ca-tor": ["en-ca", 94, "Continue"], # English - Canada - Toronto
     "en-ca-van": ["en-ca", 95, "Continue"], # English - Canada - Vancouver
+    "en-gb-lon": ["en-gb", 17, "Continue"], # English - United Kingdom - London
 }

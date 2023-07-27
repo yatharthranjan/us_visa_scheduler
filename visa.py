@@ -61,6 +61,10 @@ WORK_LIMIT_TIME = config['TIME'].getfloat('WORK_LIMIT_TIME')
 WORK_COOLDOWN_TIME = config['TIME'].getfloat('WORK_COOLDOWN_TIME')
 # Temporary Banned (empty list): wait COOLDOWN_TIME hours
 BAN_COOLDOWN_TIME = config['TIME'].getfloat('BAN_COOLDOWN_TIME')
+# No available dates (empty list): wait NO_DATE_SLEEP_TIME hours
+NO_DATE_SLEEP_TIME = config['TIME'].getfloat('NO_DATE_SLEEP_TIME')
+
+NO_DATE_THRESHOLD = config['TIME'].getint('NO_DATE_THRESHOLD')
 
 # CHROMEDRIVER
 # Details for the script to control Chrome
@@ -230,16 +234,21 @@ def info_logger(file_path, log):
 
 
 if LOCAL_USE:
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    from selenium import webdriver
+    driver_path_local = config.get("CHROMEDRIVER", "DRIVER_PATH")
+    driver = webdriver.Chrome(driver_path_local)
+    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 else:
     driver = webdriver.Remote(command_executor=HUB_ADDRESS, options=webdriver.ChromeOptions())
 
 
 if __name__ == "__main__":
+    current_no_dates = 0
     first_loop = True
     while 1:
         LOG_FILE_NAME = "log_" + str(datetime.now().date()) + ".txt"
         if first_loop:
+            current_no_dates = 0
             t0 = time.time()
             total_time = 0
             Req_count = 0
@@ -252,14 +261,21 @@ if __name__ == "__main__":
             info_logger(LOG_FILE_NAME, msg)
             dates = get_date()
             if not dates:
+                # also happens when no dates are available
                 # Ban Situation
-                msg = f"List is empty, Probabely banned!\n\tSleep for {BAN_COOLDOWN_TIME} hours!\n"
-                print(msg)
-                info_logger(LOG_FILE_NAME, msg)
-                send_notification("BAN", msg)
-                driver.get(SIGN_OUT_LINK)
-                time.sleep(BAN_COOLDOWN_TIME * hour)
-                first_loop = True
+                # msg = f"List is empty, Probabely banned!\n\tSleep for {BAN_COOLDOWN_TIME} hours!\n"
+                # print(msg)
+                # info_logger(LOG_FILE_NAME, msg)
+                # send_notification("BAN", msg)
+                # driver.get(SIGN_OUT_LINK)
+                # time.sleep(BAN_COOLDOWN_TIME * hour)
+                # first_loop = True
+                current_no_dates += 1
+                if current_no_dates > NO_DATE_THRESHOLD:
+                    # No dates found, wait for a while
+                    time.sleep(NO_DATE_SLEEP_TIME)
+                    current_no_dates = 0
+                continue
             else:
                 # Print Available dates:
                 msg = ""
@@ -290,8 +306,11 @@ if __name__ == "__main__":
                     print(msg)
                     info_logger(LOG_FILE_NAME, msg)
                     time.sleep(RETRY_WAIT_TIME)
-        except:
+        except Exception as e:
             # Exception Occured
+            print(e)
+            if "RemoteDisconnected" in str(e):
+                continue
             msg = f"Break the loop after exception!\n"
             END_MSG_TITLE = "EXCEPTION"
             break
