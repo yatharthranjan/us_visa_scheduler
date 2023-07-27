@@ -235,7 +235,7 @@ def info_logger(file_path, log):
 
 if LOCAL_USE:
     from selenium import webdriver
-    driver_path_local = config.get("CHROMEDRIVER", "DRIVER_PATH")
+    driver_path_local = config["CHROMEDRIVER"]["DRIVER_PATH"]
     driver = webdriver.Chrome(driver_path_local)
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 else:
@@ -283,11 +283,15 @@ if __name__ == "__main__":
                     msg = msg + "%s" % (d.get('date')) + ", "
                 msg = "Available dates:\n"+ msg
                 print(msg)
+                send_notification("Visa date now, trying to reschedule", msg)
                 info_logger(LOG_FILE_NAME, msg)
                 date = get_available_date(dates)
+                print(f"Got date successfully! {date}")
                 if date:
                     # A good date to schedule for
+                    print(f"Trying to reschedule for {date}")
                     END_MSG_TITLE, msg = reschedule(date)
+                    print("Reschedule result: ", END_MSG_TITLE, msg)
                     break
                 RETRY_WAIT_TIME = random.randint(RETRY_TIME_L_BOUND, RETRY_TIME_U_BOUND)
                 t1 = time.time()
