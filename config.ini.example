@@ -41,5 +41,7 @@ WORK_COOLDOWN_TIME = 2.25
 ; Temporary Banned (empty list): wait COOLDOWN_TIME (hours)
 BAN_COOLDOWN_TIME = 5
 
+; Time between checks for available dates when no date is found (seconds)
 NO_DATE_SLEEP_TIME = 60
+; Max number of retries at a time before sleep when no date is found
 NO_DATE_THRESHOLD= 5

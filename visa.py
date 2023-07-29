@@ -292,7 +292,11 @@ if __name__ == "__main__":
                     print(f"Trying to reschedule for {date}")
                     END_MSG_TITLE, msg = reschedule(date)
                     print("Reschedule result: ", END_MSG_TITLE, msg)
-                    break
+                    if END_MSG_TITLE == "FAIL":
+                        send_notification(END_MSG_TITLE, msg + "\nTrying again...")
+                        continue
+                    else:
+                        break
                 RETRY_WAIT_TIME = random.randint(RETRY_TIME_L_BOUND, RETRY_TIME_U_BOUND)
                 t1 = time.time()
                 total_time = t1 - t0
@@ -313,7 +317,11 @@ if __name__ == "__main__":
         except Exception as e:
             # Exception Occured
             print(e)
-            if "RemoteDisconnected" in str(e):
+            stre = str(e)
+            if "RemoteDisconnected" in stre \
+                or "Expecting value: line 1 column 1" in stre \
+                or "Failed to execute 'send' on 'XMLHttpRequest'" in stre \
+                or "script timeout" in stre :
                 continue
             msg = f"Break the loop after exception!\n"
             END_MSG_TITLE = "EXCEPTION"
