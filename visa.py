@@ -254,6 +254,7 @@ if __name__ == "__main__":
             Req_count = 0
             start_process()
             first_loop = False
+            last_date_notified = None
         Req_count += 1
         try:
             msg = "-" * 60 + f"\nRequest count: {Req_count}, Log time: {datetime.today()}\n"
@@ -283,7 +284,9 @@ if __name__ == "__main__":
                     msg = msg + "%s" % (d.get('date')) + ", "
                 msg = "Available dates:\n"+ msg
                 print(msg)
-                send_notification("Visa date now, trying to reschedule", msg)
+                if last_date_notified != msg:
+                    send_notification("Visa date now, trying to reschedule", msg)
+                    last_date_notified = msg
                 info_logger(LOG_FILE_NAME, msg)
                 date = get_available_date(dates)
                 print(f"Got date successfully! {date}")
